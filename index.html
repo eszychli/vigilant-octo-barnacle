@@ -55,3 +55,31 @@
       let camera;
 
       // Request camera
+      navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+        cameraStream.srcObject = stream;
+        camera = stream.getTracks()[0];
+      }).catch(error => {
+        console.log("Error: " + error);
+      });
+
+      takePhotoButton.addEventListener("click", async () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = cameraStream.videoWidth;
+        canvas.height = cameraStream.videoHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(cameraStream, 0, 0);
+        const dataURL = canvas.toDataURL();
+        photoPreview.src = dataURL;
+        downloadButton.removeAttribute("disabled");
+      });
+
+      downloadButton.addEventListener("click", async () => {
+        const link = document.createElement("a");
+        link.href = photoPreview.src;
+        link.download = "photo.jpg";
+        link.click();
+      });
+    </script>
+  </body>
+</html>
+
