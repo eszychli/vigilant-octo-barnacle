@@ -40,8 +40,42 @@
       </div>
     </div>
     <script>
-      // JavaScript code for handling speech to text
-      // ...
+      // JavaScript code to handle speech to text
+      const startButton = document.getElementById("start-button");
+      const stopButton = document.getElementById("stop-button");
+      const transcriptionContainer = document.getElementById("transcription-container");
+      const transcription = document.getElementById("transcription");
+
+      let recognition;
+
+      if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+      }
+
+      startButton.addEventListener("click", () => {
+        startButton.setAttribute("disabled", true);
+        stopButton.removeAttribute("disabled");
+        recognition.start();
+        transcriptionContainer.style.display = "block";
+      });
+
+      stopButton.addEventListener("click", () => {
+        startButton.removeAttribute("disabled");
+        stopButton.setAttribute("disabled", true);
+        recognition.stop();
+      });
+
+      recognition.addEventListener("result", (e) => {
+        transcription.innerHTML = e.results[0][0].transcript;
+      });
+
+      recognition.addEventListener("end", () => {
+        startButton.removeAttribute("disabled");
+        stopButton.setAttribute("disabled", true);
+      });
     </script>
   </body>
 </html>
