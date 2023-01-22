@@ -3,83 +3,55 @@
   <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <style>
-      /* CSS styles for the app */
-      .camera-container {
-        width: 100%;
-        height: 0;
-        padding-bottom: 75%;
-        position: relative;
-      }
-      .camera-stream {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-      }
-    </style>
   </head>
   <body>
     <div class="container">
-      <h1 class="text-center">Web Photo Booth</h1>
-      <div class="row">
-        <div class="col-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Take a photo</h5>
-              <p class="card-text">Click the button below to take a photo using your device's camera.</p>
-              <button id="take-photo-button" class="btn btn-primary">Take Photo</button>
-            </div>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Preview</h5>
-              <p class="card-text">This is a preview of the photo you just took.</p>
-              <div class="camera-container">
-                <video id="camera-stream" class="camera-stream"></video>
-                <img id="photo-preview" class="img-fluid">
-              </div>
-              <button id="download-button" class="btn btn-primary" disabled>Download</button>
-            </div>
-          </div>
-        </div>
+      <h1 class="text-center">Speech to Text</h1>
+      <div class="text-center">
+        <button class="btn btn-primary" id="start-button">Start</button>
+        <button class="btn btn-danger" id="stop-button" disabled>Stop</button>
+      </div>
+      <div id="transcription-container" class="mt-3">
+        <p id="transcription"></p>
       </div>
     </div>
     <script>
-      // JavaScript code to handle taking a photo using the device's camera
-      const takePhotoButton = document.getElementById("take-photo-button");
-      const downloadButton = document.getElementById("download-button");
-      const cameraStream = document.getElementById("camera-stream");
-      const photoPreview = document.getElementById("photo-preview");
-      let camera;
+      // JavaScript code to handle speech to text
+      const startButton = document.getElementById("start-button");
+      const stopButton = document.getElementById("stop-button");
+      const transcriptionContainer = document.getElementById("transcription-container");
+      const transcription = document.getElementById("transcription");
 
-      // Request camera
-      navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-        cameraStream.srcObject = stream;
-        camera = stream.getTracks()[0];
-      }).catch(error => {
-        console.log("Error: " + error);
+      let recognition;
+
+      if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+      }
+
+      startButton.addEventListener("click", () => {
+        startButton.setAttribute("disabled", true);
+        stopButton.removeAttribute("disabled");
+        recognition.start();
+        transcriptionContainer.style.display = "block";
       });
 
-      takePhotoButton.addEventListener("click", async () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = cameraStream.videoWidth;
-        canvas.height = cameraStream.videoHeight;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(cameraStream, 0, 0);
-        const dataURL = canvas.toDataURL();
-        photoPreview.src = dataURL;
-        downloadButton.removeAttribute("disabled");
+      stopButton.addEventListener("click", () => {
+        startButton.removeAttribute("disabled");
+        stopButton.setAttribute("disabled", true);
+        recognition.stop();
       });
 
-      downloadButton.addEventListener("click", async () => {
-        const link = document.createElement("a");
-        link.href = photoPreview.src;
-        link.download = "photo.jpg";
-        link.click();
+      recognition.addEventListener("result", (e) => {
+        transcription.innerHTML = e.results[0][0].transcript;
+      });
+
+      recognition.addEventListener("end", () => {
+        startButton.removeAttribute("disabled");
+        stopButton.setAttribute("disabled", true);
       });
     </script>
   </body>
 </html>
-
