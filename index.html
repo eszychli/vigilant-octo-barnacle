@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
   <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -78,4 +78,55 @@
       });
     </script>
   </body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script>
+    var timer = 0;
+    var interval;
+
+    function startTimer() {
+      interval = setInterval(function() {
+        timer++;
+        var minutes = Math.floor(timer / 60);
+        var seconds = timer % 60;
+        if (seconds < 10) {
+          seconds = "0" + seconds;
+        }
+        if (minutes < 10) {
+          minutes = "0" + minutes;
+        }
+        document.getElementById("timer").innerHTML = minutes + ":" + seconds;
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(interval);
+    }
+
+    function resetTimer() {
+      timer = 0;
+      document.getElementById("timer").innerHTML = "00:00";
+      clearInterval(interval);
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Stopwatch</h1>
+    <div id="timer" class="text-center">00:00</div>
+    <br>
+    <div class="text-center">
+      <button onclick="startTimer()" class="btn btn-success">Start</button>
+      <button onclick="stopTimer()" class="btn btn-danger">Stop</button>
+      <button onclick="resetTimer()" class="btn btn-warning">Reset</button>
+    </div>
+  </div>
+</body>
 </html>
+
