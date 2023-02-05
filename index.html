@@ -4,7 +4,9 @@
     <title>Image Rating App</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
     <script>
-    var ratings = [];
+      var ratings = [];
+      var ratingCount = {};
+
       // Select multiple files from the folder
       function selectImages() {
         document.getElementById("input-file").click();
@@ -40,14 +42,24 @@
             var fileName = file.name;
             var ratingValue = e.target.value;
             ratings.push({ fileName: fileName, rating: ratingValue });
+            if (!ratingCount[ratingValue]) {
+              ratingCount[ratingValue] = 1;
+            } else {
+              ratingCount[ratingValue]++;
+            }
           });
         }
       }
 
       // Convert the ratings array to a CSV file
       function downloadCSV() {
-        var csv = Papa.unparse(ratings, {header: true});
-        var csvData = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+        var csv = Papa.unparse(ratings, { header: true });
+        csv += '\n\n';
+        csv += 'Rating, Count\n';
+        for (var key in ratingCount) {
+          csv += key + ',' + ratingCount[key] + '\n';
+        }
+        var csvData = new Blob([csv], { type: "text/csv;charset=utf-8;" });
         var csvURL = window.URL.createObjectURL(csvData);
         var tempLink = document.createElement("a");
         tempLink.href = csvURL;
