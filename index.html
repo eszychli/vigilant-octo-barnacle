@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
   <head>
     <title>Image Rating App</title>
@@ -6,6 +6,7 @@
     <script>
       var ratings = []
       var ratingCount = {}
+      var fileNames = []
 
       // Select multiple files from the folder
       function selectImages() {
@@ -27,6 +28,7 @@
 
           // Create a rating input for each image
           var rating = document.createElement('div')
+          fileNames.push(file.name)
           // Create a rating input for each image
           var rating = document.createElement('div')
           var descriptions = [' - BAD gallery', ' - I`m OK with this']
@@ -45,7 +47,7 @@
 
           // Add an event listener for the rating input
           rating.addEventListener('change', function (e) {
-            var fileName = file.name
+            var fileName = file.name[i];
             var ratingValue = e.target.value
             ratings.push({ fileName: fileName, rating: ratingValue })
             if (!ratingCount[ratingValue]) {
@@ -93,4 +95,4 @@
       <button onclick="downloadCSV(); return false;">Download CSV</button>
     </form>
   </body>
-</html>
+</html> -->
