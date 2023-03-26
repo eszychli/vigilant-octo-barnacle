@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>Image Rating App</title>
@@ -6,7 +6,6 @@
     <script>
       var ratings = []
       var ratingCount = {}
-      var fileNames = []
 
       // Select multiple files from the folder
       function selectImages() {
@@ -19,48 +18,58 @@
         var preview = document.getElementById('preview')
         preview.innerHTML = ''
         for (var i = 0; i < files.length; i++) {
-          var file = files[i]
-          var img = document.createElement('img')
-          img.src = URL.createObjectURL(file)
-          img.style.maxWidth = '100%'
-          img.style.margin = '10px'
-          preview.appendChild(img)
+          // Create a closure to capture the current file in a separate scope
+          ;(function (file) {
+            var img = document.createElement('img')
+            img.src = URL.createObjectURL(file)
+            img.style.maxWidth = '100%'
+            img.style.margin = '10px'
+            preview.appendChild(img)
 
-          // Create a rating input for each image
-          var rating = document.createElement('div')
-          fileNames.push(file.name)
-          // Create a rating input for each image
-          var rating = document.createElement('div')
-          var descriptions = [' - BAD gallery', ' - I`m OK with this']
-          for (var j = 1; j <= 2; j++) {
-            var radio = document.createElement('input')
-            radio.type = 'radio'
-            radio.name = 'rating-' + i
-            radio.required = true
-            radio.value = j
-            var description = document.createElement('span')
-            description.innerHTML = j + ' ' + descriptions[j - 1]
-            rating.appendChild(radio)
-            rating.appendChild(description)
-          }
-          preview.appendChild(rating)
-
-          // Add an event listener for the rating input
-          rating.addEventListener('change', function (e) {
-            var fileName = file.name[i];
-            var ratingValue = e.target.value
-            ratings.push({ fileName: fileName, rating: ratingValue })
-            if (!ratingCount[ratingValue]) {
-              ratingCount[ratingValue] = 1
-            } else {
-              ratingCount[ratingValue]++
+            // Create a rating input for each image
+            var rating = document.createElement('div')
+            var descriptions = [' - BAD gallery', ' - I`m OK with this']
+            for (var j = 1; j <= 2; j++) {
+              var radio = document.createElement('input')
+              radio.type = 'radio'
+              radio.name = 'rating-' + i
+              radio.required = true
+              radio.value = j
+              var description = document.createElement('span')
+              description.innerHTML = j + ' ' + descriptions[j - 1]
+              rating.appendChild(radio)
+              rating.appendChild(description)
             }
-          })
+            preview.appendChild(rating)
+
+            // Add an event listener for the rating input
+            rating.addEventListener('change', function (e) {
+              var fileName = file.name
+              var ratingValue = e.target.value
+              ratings.push({ fileName: fileName, rating: ratingValue })
+              if (!ratingCount[ratingValue]) {
+                ratingCount[ratingValue] = 1
+              } else {
+                ratingCount[ratingValue]++
+              }
+            })
+          })(files[i])
         }
       }
 
       // Convert the ratings array to a CSV file
       function downloadCSV() {
+        // Check if all images have been rated
+        var numRatings = ratings.length
+        var numImages = document
+          .getElementById('preview')
+          .querySelectorAll('img').length
+        if (numRatings < numImages) {
+          alert('Please rate all images before submitting.')
+          return
+        }
+
+        // Generate the CSV
         var csv = Papa.unparse(ratings, { header: true })
         csv += '\n\n'
         csv += 'Rating, Count\n'
@@ -73,8 +82,6 @@
         tempLink.href = csvURL
         tempLink.setAttribute('download', 'ratings.csv')
         tempLink.click()
-
-        return false
       }
     </script>
   </head>
@@ -89,10 +96,8 @@
       onchange="previewImages()"
       style="display: none;"
     />
-    <form>
-      <div id="preview"></div>
-      <br />
-      <button onclick="downloadCSV(); return false;">Download CSV</button>
-    </form>
+    <div id="preview"></div>
+    <br />
+    <button onclick="downloadCSV()">Download CSV</button>
   </body>
-</html> -->
+</html>
