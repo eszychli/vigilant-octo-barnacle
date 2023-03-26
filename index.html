@@ -4,67 +4,75 @@
     <title>Image Rating App</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
     <script>
-      var ratings = [];
-      var ratingCount = {};
+      var ratings = []
+      var ratingCount = {}
 
       // Select multiple files from the folder
       function selectImages() {
-        document.getElementById("input-file").click();
+        document.getElementById('input-file').click()
       }
 
       // Preview the selected images
       function previewImages() {
-        var files = document.getElementById("input-file").files;
-        var preview = document.getElementById("preview");
-        preview.innerHTML = "";
+        var files = document.getElementById('input-file').files
+        var preview = document.getElementById('preview')
+        preview.innerHTML = ''
         for (var i = 0; i < files.length; i++) {
-          var file = files[i];
-          var img = document.createElement("img");
-          img.src = URL.createObjectURL(file);
-          img.style.maxWidth = "100%";
-          img.style.margin = "10px";
-          preview.appendChild(img);
+          var file = files[i]
+          var img = document.createElement('img')
+          img.src = URL.createObjectURL(file)
+          img.style.maxWidth = '100%'
+          img.style.margin = '10px'
+          preview.appendChild(img)
 
           // Create a rating input for each image
-          var rating = document.createElement("div");
-          for (var j = 1; j <= 5; j++) {
-            var radio = document.createElement("input");
-            radio.type = "radio";
-            radio.name = "rating-" + i;
-            radio.value = j;
-            rating.appendChild(radio);
-            rating.innerHTML += j + " ";
+          var rating = document.createElement('div')
+          // Create a rating input for each image
+          var rating = document.createElement('div')
+          var descriptions = [' - BAD gallery', ' - I`m OK with this']
+          for (var j = 1; j <= 2; j++) {
+            var radio = document.createElement('input')
+            radio.type = 'radio'
+            radio.name = 'rating-' + i
+            radio.required = true
+            radio.value = j
+            var description = document.createElement('span')
+            description.innerHTML = j + ' ' + descriptions[j - 1]
+            rating.appendChild(radio)
+            rating.appendChild(description)
           }
-          preview.appendChild(rating);
+          preview.appendChild(rating)
 
           // Add an event listener for the rating input
-          rating.addEventListener("change", function(e) {
-            var fileName = file.name;
-            var ratingValue = e.target.value;
-            ratings.push({ fileName: fileName, rating: ratingValue });
+          rating.addEventListener('change', function (e) {
+            var fileName = file.name
+            var ratingValue = e.target.value
+            ratings.push({ fileName: fileName, rating: ratingValue })
             if (!ratingCount[ratingValue]) {
-              ratingCount[ratingValue] = 1;
+              ratingCount[ratingValue] = 1
             } else {
-              ratingCount[ratingValue]++;
+              ratingCount[ratingValue]++
             }
-          });
+          })
         }
       }
 
       // Convert the ratings array to a CSV file
       function downloadCSV() {
-        var csv = Papa.unparse(ratings, { header: true });
-        csv += '\n\n';
-        csv += 'Rating, Count\n';
+        var csv = Papa.unparse(ratings, { header: true })
+        csv += '\n\n'
+        csv += 'Rating, Count\n'
         for (var key in ratingCount) {
-          csv += key + ',' + ratingCount[key] + '\n';
+          csv += key + ',' + ratingCount[key] + '\n'
         }
-        var csvData = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-        var csvURL = window.URL.createObjectURL(csvData);
-        var tempLink = document.createElement("a");
-        tempLink.href = csvURL;
-        tempLink.setAttribute("download", "ratings.csv");
-        tempLink.click();
+        var csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+        var csvURL = window.URL.createObjectURL(csvData)
+        var tempLink = document.createElement('a')
+        tempLink.href = csvURL
+        tempLink.setAttribute('download', 'ratings.csv')
+        tempLink.click()
+
+        return false
       }
     </script>
   </head>
@@ -79,8 +87,10 @@
       onchange="previewImages()"
       style="display: none;"
     />
-    <div id="preview"></div>
-    <br>
-    <button onclick="downloadCSV()">Download CSV</button>
+    <form>
+      <div id="preview"></div>
+      <br />
+      <button onclick="downloadCSV(); return false;">Download CSV</button>
+    </form>
   </body>
 </html>
